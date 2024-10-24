@@ -1,0 +1,41 @@
+server:
+  port: 5000
+
+spring:
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: TASK-USER-SERVICE
+            uri:
+              lb://TASK-USER-SERVICE
+            predicates:
+              - Path=/auth/**, /users/**, /api/users/**, /
+          - id: TASK-SERVICE
+            uri:
+              lb://TASK-SERVICE
+            predicates:
+              - Path=/tasks/**, /api/tasks/**
+          - id: SUBMISSION-SERVICE
+            uri:
+              lb://SUBMISSION-SERVICE
+            predicates:
+              - Path=/submission/**, /api/submission/**
+
+        default-filters:
+          - DedupeResponseHeader=Access-Control-Allow-Credential Access-Control-Allow-Origin
+        globalcors:
+          cors-configuration:
+            '[/**]':
+              allowedOrigins: "*"
+              allowedMethods: "*"
+              allowedHeaders: "*"
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka
